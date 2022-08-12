@@ -26,8 +26,7 @@ public class Emprestimo {
 		opcao = leitor.nextLine();
 		switch (opcao) {
 		case "LISTAR LIVROS":
-			System.out.println();
-			System.out.println("********** ACERVO DE LIVROS **********\n");
+			System.out.println("\n********** ACERVO DE LIVROS **********\n");
 			livro.imprimirLivros();
 			System.out.print("\nEMPRESTAR\nVOLTAR\nInforme a opção desejada: ");
 			resposta = leitor.nextLine();
@@ -39,8 +38,7 @@ public class Emprestimo {
 			}
 			break;
 		case "LISTAR PESSOAS":
-			System.out.println();
-			System.out.println("********** PESSOAS CADASTRADAS **********\n");
+			System.out.println("\n********** PESSOAS CADASTRADAS **********\n");
 			pessoa.imprimirPessoas();
 			System.out.print("\nVOLTAR\nSAIR\nInforme a opção desejada: ");
 			resposta = leitor.nextLine();
@@ -60,7 +58,7 @@ public class Emprestimo {
 			sair();
 			break;
 		default:
-			System.out.println("OPÇÃO INVÁLIDA!\n");
+			System.out.println("\nOPÇÃO INVÁLIDA!\n");
 			iniciar();
 			break;
 		}
@@ -108,7 +106,6 @@ public class Emprestimo {
 				if (nomeLivro.equals(livro.getNome()[i])) {
 					contador++;
 					posicaoLivro = i;
-
 					validarQuantidadeLivrosDisponiveis();
 				}
 			}
@@ -116,9 +113,7 @@ public class Emprestimo {
 				System.out.println("LIVRO NÃO ENCONTRADO!!!");
 				receberNomeLivro();
 			}
-
 		} else if (opcao.equals("REGISTRAR DEVOLUÇÃO")) {
-
 			for (int i = 0; i < 10; i++) {
 				if (nomeLivro.equals(livro.getNome()[i])) {
 					contador++;
@@ -127,7 +122,7 @@ public class Emprestimo {
 			}
 			if (contador == 0) {
 				System.out.println("LIVRO NÃO ENCONTRADO!!!");
-				// receberNomeLivro();
+				receberNomeLivro();
 			}
 		}
 	}
@@ -162,10 +157,8 @@ public class Emprestimo {
 		String resposta;
 
 		System.out.println("\n***** DADOS DO EMPRÉSTIMO *****");
-		System.out.println(
-				"\nIDENTIFICAÇÃO DA PESSOA\nNOME: " + nomePessoa + "\nIDADE: " + pessoa.getIdade()[posicaoPessoa]);
-		System.out.println(
-				"\nIDENTIFICAÇÃO DO LIVRO\nTÍTULO: " + nomeLivro + "\nAUTOR: " + livro.getAutor()[posicaoLivro]);
+		System.out.println("\nIDENTIFICAÇÃO DA PESSOA\nNOME: " + nomePessoa + "\nIDADE: " + pessoa.getIdade()[posicaoPessoa]);
+		System.out.println("\nIDENTIFICAÇÃO DO LIVRO\nTÍTULO: " + nomeLivro + "\nAUTOR: " + livro.getAutor()[posicaoLivro]);
 		System.out.print("\nConfirmar empréstimo (SIM/NÃO): ");
 		resposta = leitor.nextLine();
 		if (resposta.equals("SIM")) {
@@ -173,11 +166,6 @@ public class Emprestimo {
 		} else {
 			iniciar();
 		}
-	}
-
-	public void metodoteste() {
-		System.out.println("MÉTODO TESTE DE IMPRESSÃO DA POSIÇÃO DO LIVRO NO VETOR");
-		System.out.println(posicaoLivro);
 	}
 
 	public void sair() {
@@ -206,11 +194,11 @@ public class Emprestimo {
 	}
 
 	public void registrarDevolucao() {
+		
+		String resposta;
+		
 		System.out.println("\n************ REGISTRAR DEVOLUÇÕES ************\n");
 		receberPessoa();
-
-		String resposta;
-
 		System.out.println("\n***** DADOS DA DEVOLUÇÃO *****");
 		System.out.println(
 				"\nIDENTIFICAÇÃO DA PESSOA\nNOME: " + nomePessoa + "\nIDADE: " + pessoa.getIdade()[posicaoPessoa]);
@@ -223,6 +211,5 @@ public class Emprestimo {
 		} else {
 			iniciar();
 		}
-
 	}
 }

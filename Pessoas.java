@@ -3,8 +3,8 @@ package emprestimos;
 public class Pessoas {
 
 	Emprestimo emprestimo;
-	private String nome[] = {"MAYSA REZENDE", "ENZO OLIVEIRA", "LUIGI PIRES", "JONAS DA MAIA", "ANA MAIA"};
-	private int idade[] = {27, 19, 45, 59, 31};
+	private String nome[] = { "MAYSA REZENDE", "ENZO OLIVEIRA", "LUIGI PIRES", "JONAS DA MAIA", "ANA MAIA" };
+	private int idade[] = { 27, 19, 45, 59, 31 };
 
 	public Emprestimo getEmprestimo() {
 		return emprestimo;
@@ -29,9 +29,9 @@ public class Pessoas {
 	public void setIdade(int[] idade) {
 		this.idade = idade;
 	}
-	
+
 	public void imprimirPessoas() {
-		for(int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			System.out.println("NOME: " + nome[i]);
 			System.out.println("IDADE: " + idade[i] + "\n");
 		}

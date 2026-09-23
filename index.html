@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGE - Sistema de Gerenciamento de Empréstimos</title>
+<style>
+:root{--bg:#e9eeed;--card:#fff;--ink:#1c2a29;--mut:#5d6d6b;--ac:#0f6b5c;--acs:#d5e8e4;--err:#b3402f;--line:#cfd9d7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--ac);color:#fff;padding:22px 20px}
+header h1{margin:0;font:600 1.5rem/1.2 Georgia,"Iowan Old Style",serif}
+header p{margin:4px 0 0;opacity:.85;font-size:.9rem}
+nav{display:flex;flex-wrap:wrap;gap:8px;max-width:900px;margin:18px auto 0;padding:0 20px}
+button,select,input{font:inherit}
+nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer}
+nav button[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:18px 20px 48px}
+h2{font:600 1.3rem Georgia,serif;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
+.item b{display:block}.item span{color:var(--mut);font-size:.9rem}
+.badge{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:99px;background:var(--acs);color:var(--ac);font-size:.85rem}
+.badge.zero{background:#f3d9d4;color:var(--err)}
+form,.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;max-width:520px}
+label{display:block;margin:0 0 4px;font-weight:600;font-size:.9rem}
+select,input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;margin-bottom:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:var(--ac);color:#fff;border:0;padding:10px 18px;border-radius:8px;cursor:pointer}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.msg{max-width:520px;margin-bottom:14px;padding:10px 14px;border-radius:8px;background:var(--acs);color:#0b4d42}
+.msg.err{background:#f3d9d4;color:var(--err)}
+dl{margin:0 0 14px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+dt{color:var(--mut)}dd{margin:0;font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <h1>SGE - Sistema de Gerenciamento de Empréstimos</h1>
+  <p>Acervo de livros, pessoas cadastradas, empréstimos e devoluções</p>
+</header>
+<nav id="menu" aria-label="Menu principal"></nav>
+<main id="tela"></main>
+
+<script>
+/* ===== Classe Livros ===== */
+class Livros {
+  constructor() {
+    this.nome = ["ORGULHO E PRECONCEITO", "DOM QUIXOTE DE LA MANCHA", "O PEQUENO PRÍNCIPE", "DOM CASMURRO",
+      "O CONDE DE MONTE CRISTO", "O PROCESSO", "EU, ROBÔ", "O SENHOR DOS ANÉIS", "GUERRA E PAZ",
+      "GRANDE SERTÃO VEREDAS: VEREDAS"];
+    this.autor = ["JANE AUSTEN", "MIGUEL DE CERVANTES", "ANTOINE DE SAINT-EXUPÉRY", "MACHADO DE ASSIS",
+      "ALEXANDRE DUMAS", "FRANZ KAFKA", "ISAAC ASIMOV", "J. R. R. TOLKIEN", "LEO TOLSTÓI", "JOÃO GUIMARÃES ROSA"];
+    this.quantidade = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  }
+}
+
+/* ===== Classe Pessoas ===== */
+class Pessoas {
+  constructor() {
+    this.nome = ["MAYSA REZENDE", "ENZO OLIVEIRA", "LUIGI PIRES", "JONAS DA MAIA", "ANA MAIA"];
+    this.idade = [27, 19, 45, 59, 31];
+  }
+}
+
+/* ===== Classe Emprestimo (lógica) ===== */
+class Emprestimo {
+  constructor() {
+    this.livro = new Livros();
+    this.pessoa = new Pessoas();
+  }
+  disponivel(i) { return this.livro.quantidade[i]; }
+  emprestar(i, qtd) { this.livro.quantidade[i] -= qtd; }
+  devolver(i, qtd) { this.livro.quantidade[i] += qtd; }
+}
+
+/* ===== Interface ===== */
+const sge = new Emprestimo();
+const $ = (s) => document.querySelector(s);
+const opcoes = [["livros", "Listar livros"], ["pessoas", "Listar pessoas"],
+  ["emprestimo", "Iniciar empréstimo"], ["devolucao", "Registrar devolução"], ["sair", "Sair"]];
+let aviso = null;
+
+function menu(ativa) {
+  $("#menu").innerHTML = opcoes.map(([id, t]) =>
+    `<button data-id="${id}" ${id === ativa ? 'aria-current="true"' : ""}>${t}</button>`).join("");
+  $("#menu").querySelectorAll("button").forEach(b => b.onclick = () => { aviso = null; ir(b.dataset.id); });
+}
+
+function msg() {
+  if (!aviso) return "";
+  const m = `<div class="msg ${aviso.erro ? "err" : ""}" role="status">${aviso.texto}</div>`;
+  aviso = null;
+  return m;
+}
+
+function ir(tela, dados) {
+  menu(tela);
+  const t = $("#tela");
+  if (tela === "livros") telaLivros(t);
+  else if (tela === "pessoas") telaPessoas(t);
+  else if (tela === "emprestimo") telaForm(t, "emprestimo");
+  else if (tela === "devolucao") telaForm(t, "devolucao");
+  else if (tela === "confirmar") telaConfirmar(t, dados);
+  else if (tela === "sair") t.innerHTML = `<div class="panel"><h2>Programa finalizado</h2><p>Até a próxima!</p>
+    <button class="btn" id="voltar">Voltar ao início</button></div>`, $("#voltar").onclick = () => ir("livros");
+}
+
+function telaLivros(t) {
+  const l = sge.livro;
+  t.innerHTML = msg() + `<h2>Acervo de livros</h2><div class="grid">` + l.nome.map((n, i) => `
+    <div class="item"><b>${n}</b><span>${l.autor[i]}</span><br>
+    <span class="badge ${l.quantidade[i] ? "" : "zero"}">${l.quantidade[i]} exemplar(es) disponível(is)</span></div>`).join("") +
+    `</div><p><button class="btn" id="emp">Emprestar</button></p>`;
+  $("#emp").onclick = () => ir("emprestimo");
+}
+
+function telaPessoas(t) {
+  const p = sge.pessoa;
+  t.innerHTML = `<h2>Pessoas cadastradas</h2><div class="grid">` + p.nome.map((n, i) =>
+    `<div class="item"><b>${n}</b><span>${p.idade[i]} anos</span></div>`).join("") + `</div>`;
+}
+
+function telaForm(t, tipo) {
+  const emp = tipo === "emprestimo";
+  t.innerHTML = msg() + `<h2>${emp ? "Iniciar empréstimo" : "Registrar devolução"}</h2>
+  <form id="f">
+    <label for="p">Pessoa</label>
+    <select id="p" required><option value="">Selecione…</option>${sge.pessoa.nome.map((n, i) => `<option value="${i}">${n}</option>`).join("")}</select>
+    <label for="l">Livro</label>
+    <select id="l" required><option value="">Selecione…</option>${sge.livro.nome.map((n, i) =>
+      `<option value="${i}">${n}${emp ? ` (${sge.livro.quantidade[i]} disp.)` : ""}</option>`).join("")}</select>
+    <label for="q">Quantidade de exemplares</label>
+    <input id="q" type="number" min="1" value="1" required>
+    <button class="btn" type="submit">Continuar</button>
+  </form>`;
+  $("#f").onsubmit = (e) => {
+    e.preventDefault();
+    const p = +$("#p").value, l = +$("#l").value, q = Math.max(1, parseInt($("#q").value) || 1);
+    if (emp) {
+      const disp = sge.disponivel(l);
+      if (disp === 0) { aviso = { erro: true, texto: `Não há exemplares disponíveis de ${sge.livro.nome[l]}.` }; return ir("emprestimo"); }
+      if (q > disp) {
+        if (!confirm(`Não possuímos ${q} exemplar(es) de ${sge.livro.nome[l]}.\nDisponíveis: ${disp}.\nEmprestar somente os disponíveis?`)) return ir("livros");
+        return ir("confirmar", { tipo, p, l, q: disp });
+      }
+    }
+    ir("confirmar", { tipo, p, l, q });
+  };
+}
+
+function telaConfirmar(t, d) {
+  const emp = d.tipo === "emprestimo";
+  t.innerHTML = `<h2>${emp ? "Dados do empréstimo" : "Dados da devolução"}</h2><div class="panel">
+    <dl><dt>Pessoa</dt><dd>${sge.pessoa.nome[d.p]}</dd><dt>Idade</dt><dd>${sge.pessoa.idade[d.p]}</dd>
+    <dt>Título</dt><dd>${sge.livro.nome[d.l]}</dd><dt>Autor</dt><dd>${sge.livro.autor[d.l]}</dd>
+    <dt>Exemplares</dt><dd>${d.q}</dd></dl>
+    <div class="row"><button class="btn" id="ok">Confirmar ${emp ? "empréstimo" : "devolução"}</button>
+    <button class="btn sec" id="no">Cancelar</button></div></div>`;
+  $("#ok").onclick = () => {
+    emp ? sge.emprestar(d.l, d.q) : sge.devolver(d.l, d.q);
+    aviso = { texto: emp ? "Empréstimo finalizado com sucesso!" : "Devolução finalizada com sucesso!" };
+    ir("livros");
+  };
+  $("#no").onclick = () => ir("livros");
+}
+
+ir("livros");
+</script>
+</body>
+</html>

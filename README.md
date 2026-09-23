@@ -16,15 +16,7 @@ Se a quantidade pedida for maior que a disponível, o sistema oferece emprestar 
 
 ## Como usar
 
-1. Baixe ou clone o repositório:
-
-   ```bash
-   git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
-   ```
-
-2. Abra o arquivo `index.html` em qualquer navegador moderno.
-
-Também é possível publicar no **GitHub Pages**: em *Settings > Pages*, selecione a branch principal e a pasta raiz. A aplicação ficará disponível em `https://SEU-USUARIO.github.io/SEU-REPOSITORIO/`.
+Abra o arquivo `index.html` em qualquer navegador moderno.
 
 ## Estrutura
 
@@ -50,12 +42,6 @@ O acervo tem 10 livros com 1 exemplar cada, e há 5 pessoas cadastradas. Para al
 
 - Os dados ficam apenas na memória da página: ao recarregar, o estoque volta ao estado inicial.
 - O sistema não registra quem está com cada livro, então a devolução não verifica se o empréstimo existiu.
-
-## Ideias para evolução
-
-- Persistir o estoque e o histórico com `localStorage`.
-- Registrar empréstimos por pessoa e validar as devoluções.
-- Cadastro de novos livros e pessoas pela interface.
 
 ## Tecnologias
 
